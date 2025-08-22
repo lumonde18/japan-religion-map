@@ -8,10 +8,114 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <style>:root{--primary-color:#4a5568;--background-color:#f7fafc;--card-background:#ffffff;--border-color:#e2e8f0;--text-color:#2d3748;--subtle-text:#718096}body{margin:0;font-family:'Noto Sans JP',sans-serif;background-color:var(--background-color);color:var(--text-color)}.container{max-width:800px;margin:20px auto;padding:0 15px}.spot-header{text-align:center;margin-bottom:30px}#spot-name{font-size:2.5em;color:var(--primary-color);margin-bottom:5px}.card{background-color:var(--card-background);border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,.05);padding:25px;margin-bottom:25px;overflow:hidden}#spot-image{width:100%;height:auto;border-radius:8px;margin-bottom:25px}.card h2{margin-top:0;border-bottom:2px solid var(--border-color);padding-bottom:10px;color:var(--primary-color)}.info-grid{display: grid;grid-template-columns: 120px 1fr; /* 項目幅を少し広く */gap: 10px 15px; /* 行間と列間を調整 */align-items: center; /* 垂直中央揃え */}.info-grid dt {font-weight: 700;text-align: right; /* 項目名を右寄せ */color: var(--subtle-text);margin: 0;}.info-grid dd {margin: 0;text-align: left; /* 内容を左寄せ */}</head>
+    <style>
+        :root {
+            --primary-color: #4a5568;
+            --background-color: #f7fafc;
+            --card-background: #ffffff;
+            --border-color: #e2e8f0;
+            --text-color: #2d3748;
+            --subtle-text: #718096;
+        }
+        body {
+            margin: 0;
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        .spot-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        #spot-name {
+            font-size: 2.5em;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        .card {
+            background-color: var(--card-background);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,.05);
+            padding: 25px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        #spot-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        .card h2 {
+            margin-top: 0;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            color: var(--primary-color);
+        }
+        /* 修正版 info-grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 10px 15px;
+            align-items: center;
+        }
+        .info-grid dt {
+            font-weight: 700;
+            text-align: right;
+            color: var(--subtle-text);
+            margin: 0;
+        }
+        .info-grid dd {
+            margin: 0;
+            text-align: left;
+        }
+        #history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        #history-table th, #history-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        #history-table th {
+            background-color: #f8f9fa;
+        }
+        #history-table td:first-child {
+            font-weight: 700;
+            width: 120px;
+        }
+        #spot-description {
+            line-height: 1.8;
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background-color .3s;
+        }
+        .back-button:hover {
+            background-color: #2d3748;
+        }
+        .center {
+            text-align: center;
+        }
+    </style>
+</head>
 <body>
     <div class="container">
-        <header class="spot-header"><h1 id="spot-name">読み込み中...</h1></header>
+        <header class="spot-header">
+            <h1 id="spot-name">読み込み中...</h1>
+        </header>
         <main>
             <div class="card">
                 <img id="spot-image" src="https://placehold.co/800x400/e2e8f0/a0aec0?text=画像読み込み中" alt="宗教団体の画像">
@@ -32,12 +136,17 @@
                     <tbody id="history-body"></tbody>
                 </table>
             </div>
-            <div class="card"><h2>詳細</h2><p id="spot-description">-</p></div>
+            <div class="card">
+                <h2>詳細</h2>
+                <p id="spot-description">-</p>
+            </div>
         </main>
-        <footer class="center"><a href="./index.html" class="back-button">マップに戻る</a></footer>
+        <footer class="center">
+            <a href="./index.html" class="back-button">マップに戻る</a>
+        </footer>
     </div>
     <script>
-        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjoEd9ZetKeK-x0zCTMDeVQeKx4X5NaOkZPw1rkqvmgb2JC9t24Q7FkNZIRoJhNEhvAyAYpfwSbqb1/pub?gid=0&single=true&output=csv'; // 新しいスプレッドシートのURLに置き換えてください
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjoEd9ZetKeK-x0zCTMDeVQeKx4X5NaOkZPw1rkqvmgb2JC9t24Q7FkNZIRoJhNEhvAyAYpfwSbqb1/pub?gid=0&single=true&output=csv';
         const params = new URLSearchParams(window.location.search);
         const spotId = params.get('id');
         
@@ -59,7 +168,7 @@
         }
         
         function updatePage(d) {
-            document.title = ${d.name} - 日本宗教マップ;
+            document.title = `${d.name} - 日本宗教マップ`;
             document.getElementById('spot-name').textContent = d.name;
             const i = document.getElementById('spot-image');
             if (d.image) {
