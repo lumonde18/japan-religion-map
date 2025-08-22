@@ -41,7 +41,7 @@
         const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjoEd9ZetKeK-x0zCTMDeVQeKx4X5NaOkZPw1rkqvmgb2JC9t24Q7FkNZIRoJhNEhvAyAYpfwSbqb1/pub?gid=0&single=true&output=csv'; // 新しいスプレッドシートのURLに置き換えてください
         const params = new URLSearchParams(window.location.search);
         const spotId = params.get('id');
-        
+        
         function createHistoryTable(h) {
             const t = document.getElementById('history-body');
             if (!h) {
@@ -58,7 +58,7 @@
                 }
             });
         }
-        
+        
         function updatePage(d) {
             document.title = `${d.name} - 日本宗教マップ`;
             document.getElementById('spot-name').textContent = d.name;
@@ -81,7 +81,7 @@
                 e.textContent = '情報がありません。';
             }
         }
-        
+        
         if (spotId) {
             Papa.parse(sheetUrl, {
                 download: true,
