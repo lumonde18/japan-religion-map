@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日本宗教マップ</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>:root{--primary-color:#334155;--secondary-color:#64748b;--accent-color:#c084fc;--background-color:#f1f5f9;--card-background:#ffffff;--text-color:#1e293b;--subtle-text:#475569;--border-color:#e2e8f0}body{margin:0;font-family:'Noto Sans JP',sans-serif;background-color:var(--background-color);color:var(--text-color)}#header{background-color:var(--card-background);padding:15px 30px;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,.05);position:sticky;top:0;z-index:1000}#header h1{margin:0;font-size:28px;color:var(--primary-color);font-weight:700}.intro{padding:20px 30px;text-align:center;font-size:16px;color:var(--subtle-text)}main{padding:0 30px 30px}.map-container{background-color:var(--card-background);border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.1);padding:20px}.search-container{display:flex;gap:10px;margin-bottom:20px}#search-input{flex-grow:1;padding:10px 15px;border:1px solid var(--border-color);border-radius:8px;font-size:16px}#search-input:focus{outline:none;border-color:var(--accent-color);box-shadow:0 0 0 3px rgba(192,132,252,.2)}#map{height:65vh;width:100%;border-radius:8px;position:relative}.loader{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border:8px solid #f3f3f3;border-top:8px solid var(--accent-color);border-radius:50%;width:60px;height:60px;animation:spin 1s linear infinite;z-index:999}@keyframes spin{0%{transform:translate(-50%,-50%) rotate(0)}100%{transform:translate(-50%,-50%) rotate(360deg)}}footer{text-align:center;padding:20px;font-size:14px;color:var(--subtle-text)}</style>
+</head>
+<body>
+    <header id="header"><h1>日本宗教マップ</h1></header>
+    <div class="intro"><p>地図からたどる、日本の宗教団体。気になる団体をクリックして、その教えや歴史をのぞいてみましょう。</p></div>
+    <main>
+        <div class="map-container">
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="宗教団体名で検索...">
+            </div>
+            <div id="map">
+                <div class="loader" id="loader"></div>
+            </div>
+        </div>
+    </main>
+    <footer><p>&copy; 2025 日本宗教マップ</p></footer>
+    <script>
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjoEd9ZetKeK-x0zCTMDeVQeKx4X5NaOkZPw1rkqvmgb2JC9t24Q7FkNZIRoJhNEhvAyAYpfwSbqb1/pub?gid=0&single=true&output=csv'; // 新しいスプレッドシートのURLに置き換えてください
+        const mapElement = document.getElementById('map');
+        const loader = document.getElementById('loader');
+        const searchInput = document.getElementById('search-input');
+        const map = L.map('map').setView([36.2048, 138.2529], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        const markers = L.featureGroup();
+        let allSpotsData = [];
+        
+        function initializeMarkers(data) {
+            markers.clearLayers();
+            data.forEach(spot => {
+                if (spot.id && spot.lat && spot.lon && spot.name) {
+                    const marker = L.marker([spot.lat, spot.lon]);
+                    const link = `detail.html?id=${spot.id}`;
+                    const popupContent = `<b>${spot.name}</b><br>${spot.descriptionShort || ''}<br><a href="${link}">詳細を見る</a>`;
+                    marker.bindPopup(popupContent);
+                    markers.addLayer(marker);
+                }
+            });
+            if (markers.getLayers().length > 0) {
+                map.addLayer(markers);
+                map.fitBounds(markers.getBounds(), { padding: [50, 50] });
+            } else {
+                map.setView([36.2048, 138.2529], 5);
+            }
+        }
+
+        Papa.parse(sheetUrl, {
+            download: true,
+            header: true,
+            dynamicTyping: true,
+            complete: function(results) {
+                loader.style.display = 'none';
+                allSpotsData = results.data;
+                initializeMarkers(allSpotsData);
+            },
+            error: function() {
+                loader.style.display = 'none';
+                mapElement.innerHTML = '<p style="text-align:center;">データの読み込みに失敗しました。</p>';
+            }
+        });
+
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filteredData = allSpotsData.filter(spot => {
+                return spot.name && spot.name.toLowerCase().includes(searchTerm);
+            });
+            initializeMarkers(filteredData);
+        });
+    </script>
+</body>
+</html>
