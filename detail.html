@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <style>:root{--primary-color:#4a5568;--background-color:#f7fafc;--card-background:#ffffff;--border-color:#e2e8f0;--text-color:#2d3748;--subtle-text:#718096}body{margin:0;font-family:'Noto Sans JP',sans-serif;background-color:var(--background-color);color:var(--text-color)}.container{max-width:800px;margin:20px auto;padding:0 15px}.spot-header{text-align:center;margin-bottom:30px}#spot-name{font-size:2.5em;color:var(--primary-color);margin-bottom:5px}.card{background-color:var(--card-background);border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,.05);padding:25px;margin-bottom:25px;overflow:hidden}#spot-image{width:100%;height:auto;border-radius:8px;margin-bottom:25px}.card h2{margin-top:0;border-bottom:2px solid var(--border-color);padding-bottom:10px;color:var(--primary-color)}.info-grid{display:grid;grid-template-columns:100px 1fr;gap:15px}.info-grid dt{font-weight:700;text-align:left;color:var(--subtle-text)}.info-grid dd{margin:0}#history-table{width:100%;border-collapse:collapse}#history-table th,#history-table td{padding:12px;text-align:left;border-bottom:1px solid var(--border-color)}#history-table th{background-color:#f8f9fa}#history-table td:first-child{font-weight:700;width:120px}#spot-description{line-height:1.8}.back-button{display:inline-block;margin-top:20px;padding:10px 20px;background-color:var(--primary-color);color:#fff;text-decoration:none;border-radius:8px;transition:background-color .3s}.back-button:hover{background-color:#2d3748}.center{text-align:center}</style>
+    <style>:root{--primary-color:#4a5568;--background-color:#f7fafc;--card-background:#ffffff;--border-color:#e2e8f0;--text-color:#2d3748;--subtle-text:#718096}body{margin:0;font-family:'Noto Sans JP',sans-serif;background-color:var(--background-color);color:var(--text-color)}.container{max-width:800px;margin:20px auto;padding:0 15px}.spot-header{text-align:center;margin-bottom:30px}#spot-name{font-size:2.5em;color:var(--primary-color);margin-bottom:5px}.card{background-color:var(--card-background);border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,.05);padding:25px;margin-bottom:25px;overflow:hidden}#spot-image{width:100%;height:auto;border-radius:8px;margin-bottom:25px}.card h2{margin-top:0;border-bottom:2px solid var(--border-color);padding-bottom:10px;color:var(--primary-color)}.info-grid{display:grid;grid-template-columns:100px 1fr;gap:15px}.info-grid dt{font-weight:700;text-align:left;color:var(--subtle-text)}.info-grid dd{margin:0}.info-group{display:grid;grid-template-columns:100px 1fr;gap:15px;margin-bottom:10px}.info-group dt{font-weight:700;text-align:left;color:var(--subtle-text);margin:0;}.info-group dd{margin:0;}</style>
 </head>
 <body>
     <div class="container">
@@ -17,12 +17,18 @@
             <div class="card">
                 <img id="spot-image" src="https://placehold.co/800x400/e2e8f0/a0aec0?text=画像読み込み中" alt="宗教団体の画像">
                 <h2>基本情報</h2>
-                <dl class="info-grid">
-                  　<dt>設立者</dt><dd><span id="spot-period">-</span></dd>
+                                <div class="info-group">
+                    <dt>設立者</dt><dd id="spot-founder">-</dd>
+                </div>
+                <div class="info-group">
                     <dt>設立年</dt><dd id="spot-founded-year">-</dd>
+                </div>
+                <div class="info-group">
                     <dt>会員数</dt><dd id="spot-members">-</dd>
+                </div>
+                <div class="info-group">
                     <dt>信仰対象</dt><dd id="spot-deity">-</dd>
-                </dl>
+                </div>
             </div>
             <div class="card">
                 <h2>沿革</h2>
