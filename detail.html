@@ -1,110 +1,103 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>宗教団体詳細 - 日本宗教マップ</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <style>:root{--primary-color:#4a5568;--background-color:#f7fafc;--card-background:#ffffff;--border-color:#e2e8f0;--text-color:#2d3748;--subtle-text:#718096}body{margin:0;font-family:'Noto Sans JP',sans-serif;background-color:var(--background-color);color:var(--text-color)}.container{max-width:800px;margin:20px auto;padding:0 15px}.spot-header{text-align:center;margin-bottom:30px}#spot-name{font-size:2.5em;color:var(--primary-color);margin-bottom:5px}.card{background-color:var(--card-background);border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,.05);padding:25px;margin-bottom:25px;overflow:hidden}#spot-image{width:100%;height:auto;border-radius:8px;margin-bottom:25px}.card h2{margin-top:0;border-bottom:2px solid var(--border-color);padding-bottom:10px;color:var(--primary-color)}.info-grid{display:grid;grid-template-columns:100px 1fr;gap:15px}.info-grid dt{font-weight:700;text-align:left;color:var(--subtle-text)}.info-grid dd{margin:0}.info-group{display:grid;grid-template-columns:100px 1fr;gap:15px;margin-bottom:10px}.info-group dt{font-weight:700;text-align:left;color:var(--subtle-text);margin:0;}.info-group dd{margin:0;}</style>
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宗教団体詳細 - 日本宗教マップ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>:root{--primary-color:#4a5568;--background-color:#f7fafc;--card-background:#ffffff;--border-color:#e2e8f0;--text-color:#2d3748;--subtle-text:#718096}body{margin:0;font-family:'Noto Sans JP',sans-serif;background-color:var(--background-color);color:var(--text-color)}.container{max-width:800px;margin:20px auto;padding:0 15px}.spot-header{text-align:center;margin-bottom:30px}#spot-name{font-size:2.5em;color:var(--primary-color);margin-bottom:5px}.card{background-color:var(--card-background);border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,.05);padding:25px;margin-bottom:25px;overflow:hidden}#spot-image{width:100%;height:auto;border-radius:8px;margin-bottom:25px}.card h2{margin-top:0;border-bottom:2px solid var(--border-color);padding-bottom:10px;color:var(--primary-color)}.info-grid{display: grid;grid-template-columns: 120px 1fr; /* 項目幅を少し広く */gap: 10px 15px; /* 行間と列間を調整 */align-items: center; /* 垂直中央揃え */}.info-grid dt {font-weight: 700;text-align: right; /* 項目名を右寄せ */color: var(--subtle-text);margin: 0;}.info-grid dd {margin: 0;text-align: left; /* 内容を左寄せ */}</head>
 <body>
-    <div class="container">
-        <header class="spot-header"><h1 id="spot-name">読み込み中...</h1></header>
-        <main>
-            <div class="card">
-                <img id="spot-image" src="https://placehold.co/800x400/e2e8f0/a0aec0?text=画像読み込み中" alt="宗教団体の画像">
-                <h2>基本情報</h2>
-                                <div class="info-group">
-                    <dt>設立者</dt><dd id="spot-founder">-</dd>
-                </div>
-                <div class="info-group">
-                    <dt>設立年</dt><dd id="spot-founded-year">-</dd>
-                </div>
-                <div class="info-group">
-                    <dt>会員数</dt><dd id="spot-members">-</dd>
-                </div>
-                <div class="info-group">
-                    <dt>信仰対象</dt><dd id="spot-deity">-</dd>
-                </div>
-            </div>
-            <div class="card">
-                <h2>沿革</h2>
-                <table id="history-table">
-                    <thead>
-                        <tr><th>年</th><th>出来事</th></tr>
-                    </thead>
-                    <tbody id="history-body"></tbody>
-                </table>
-            </div>
-            <div class="card"><h2>詳細</h2><p id="spot-description">-</p></div>
-        </main>
-        <footer class="center"><a href="./index.html" class="back-button">マップに戻る</a></footer>
-    </div>
-    <script>
-        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjoEd9ZetKeK-x0zCTMDeVQeKx4X5NaOkZPw1rkqvmgb2JC9t24Q7FkNZIRoJhNEhvAyAYpfwSbqb1/pub?gid=0&single=true&output=csv'; // 新しいスプレッドシートのURLに置き換えてください
-        const params = new URLSearchParams(window.location.search);
-        const spotId = params.get('id');
-        
-        function createHistoryTable(h) {
-            const t = document.getElementById('history-body');
-            if (!h) {
-                t.innerHTML = '<tr><td colspan="2">情報がありません。</td></tr>';
-                return;
-            }
-            const e = h.split(';');
-            e.forEach(s => {
-                const [y, d] = s.split(':').map(i => i.trim());
-                if (y && d) {
-                    const r = t.insertRow();
-                    r.insertCell().textContent = y;
-                    r.insertCell().textContent = d;
-                }
-            });
-        }
-        
-        function updatePage(d) {
-            document.title = `${d.name} - 日本宗教マップ`;
-            document.getElementById('spot-name').textContent = d.name;
-            const i = document.getElementById('spot-image');
-            if (d.image) {
-                i.src = d.image;
-                i.alt = d.name;
-            } else {
-                i.style.display = 'none';
-            }
-            document.getElementById('spot-founder').textContent = d.founder || '不明';
-            document.getElementById('spot-founded-year').textContent = d.founded_year || '不明';
-            document.getElementById('spot-members').textContent = d.members || '不明';
-            document.getElementById('spot-deity').textContent = d.deity || '不明';
-            createHistoryTable(d.history_table);
-            const e = document.getElementById('spot-description');
-            if (d.description) {
-                e.innerHTML = d.description.replace(/\n/g,'<br>');
-            } else {
-                e.textContent = '情報がありません。';
-            }
-        }
-        
-        if (spotId) {
-            Papa.parse(sheetUrl, {
-                download: true,
-                header: true,
-                dynamicTyping: true,
-                complete: function(results) {
-                    const d = results.data.find(row => row.id == spotId);
-                    if (d) {
-                        updatePage(d);
-                    } else {
-                        document.getElementById('spot-name').textContent = '指定されたスポットが見つかりません';
-                    }
-                }
-            });
-        } else {
-            document.getElementById('spot-name').textContent = 'スポットが指定されていません';
-        }
-    </script>
+    <div class="container">
+        <header class="spot-header"><h1 id="spot-name">読み込み中...</h1></header>
+        <main>
+            <div class="card">
+                <img id="spot-image" src="https://placehold.co/800x400/e2e8f0/a0aec0?text=画像読み込み中" alt="宗教団体の画像">
+                <h2>基本情報</h2>
+                <dl class="info-grid">
+                    <dt>設立者</dt><dd id="spot-founder">-</dd>
+                    <dt>設立年</dt><dd id="spot-founded-year">-</dd>
+                    <dt>会員数</dt><dd id="spot-members">-</dd>
+                    <dt>信仰対象</dt><dd id="spot-deity">-</dd>
+                </dl>
+            </div>
+            <div class="card">
+                <h2>沿革</h2>
+                <table id="history-table">
+                    <thead>
+                        <tr><th>年</th><th>出来事</th></tr>
+                    </thead>
+                    <tbody id="history-body"></tbody>
+                </table>
+            </div>
+            <div class="card"><h2>詳細</h2><p id="spot-description">-</p></div>
+        </main>
+        <footer class="center"><a href="./index.html" class="back-button">マップに戻る</a></footer>
+    </div>
+    <script>
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjoEd9ZetKeK-x0zCTMDeVQeKx4X5NaOkZPw1rkqvmgb2JC9t24Q7FkNZIRoJhNEhvAyAYpfwSbqb1/pub?gid=0&single=true&output=csv'; // 新しいスプレッドシートのURLに置き換えてください
+        const params = new URLSearchParams(window.location.search);
+        const spotId = params.get('id');
+        
+        function createHistoryTable(h) {
+            const t = document.getElementById('history-body');
+            if (!h) {
+                t.innerHTML = '<tr><td colspan="2">情報がありません。</td></tr>';
+                return;
+            }
+            const e = h.split(';');
+            e.forEach(s => {
+                const [y, d] = s.split(':').map(i => i.trim());
+                if (y && d) {
+                    const r = t.insertRow();
+                    r.insertCell().textContent = y;
+                    r.insertCell().textContent = d;
+                }
+            });
+        }
+        
+        function updatePage(d) {
+            document.title = ${d.name} - 日本宗教マップ;
+            document.getElementById('spot-name').textContent = d.name;
+            const i = document.getElementById('spot-image');
+            if (d.image) {
+                i.src = d.image;
+                i.alt = d.name;
+            } else {
+                i.style.display = 'none';
+            }
+            document.getElementById('spot-founder').textContent = d.founder || '不明';
+            document.getElementById('spot-founded-year').textContent = d.founded_year || '不明';
+            document.getElementById('spot-members').textContent = d.members || '不明';
+            document.getElementById('spot-deity').textContent = d.deity || '不明';
+            createHistoryTable(d.history_table);
+            const e = document.getElementById('spot-description');
+            if (d.description) {
+                e.innerHTML = d.description.replace(/\n/g,'<br>');
+            } else {
+                e.textContent = '情報がありません。';
+            }
+        }
+        
+        if (spotId) {
+            Papa.parse(sheetUrl, {
+                download: true,
+                header: true,
+                dynamicTyping: true,
+                complete: function(results) {
+                    const d = results.data.find(row => row.id == spotId);
+                    if (d) {
+                        updatePage(d);
+                    } else {
+                        document.getElementById('spot-name').textContent = '指定されたスポットが見つかりません';
+                    }
+                }
+            });
+        } else {
+            document.getElementById('spot-name').textContent = 'スポットが指定されていません';
+        }
+    </script>
 </body>
 </html>
